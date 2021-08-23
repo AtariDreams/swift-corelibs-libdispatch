@@ -130,16 +130,17 @@ _dispatch_data_destroy_buffer(const void* buffer, size_t size,
 {
 	if (destructor == DISPATCH_DATA_DESTRUCTOR_FREE) {
 		free((void*)buffer);
-	} else if (destructor == DISPATCH_DATA_DESTRUCTOR_NONE) {
-		// do nothing
 #if HAVE_MACH
 	} else if (destructor == DISPATCH_DATA_DESTRUCTOR_VM_DEALLOCATE) {
-		mach_vm_size_t vm_size = size;
-		mach_vm_address_t vm_addr = (uintptr_t)buffer;
-		mach_vm_deallocate(mach_task_self(), vm_addr, vm_size);
+	    mach_vm_size_t vm_size = size;
+	    mach_vm_address_t vm_addr = (uintptr_t)buffer;
+	    mach_vm_deallocate(mach_task_self(), vm_addr, vm_size);
 #else
-		(void)size;
+	    (void)size;
 #endif
+	} else if (destructor == DISPATCH_DATA_DESTRUCTOR_NONE) {
+		// do nothing
+		return;
 	} else {
 		if (!queue) {
 			queue = _dispatch_get_default_queue(false);
@@ -573,8 +574,7 @@ _dispatch_data_apply(dispatch_data_t dd, size_t offset, size_t from,
 				offset, buffer + from, size, applier);
 	}
 
-	size_t i;
-	for (i = 0; i < _dispatch_data_num_records(dd) && result; ++i) {
+	for (size_t i = 0; i < _dispatch_data_num_records(dd) && result; ++i) {
 		result = _dispatch_data_apply(dd->records[i].data_object,
 				offset, dd->records[i].from, dd->records[i].length, ctxt,
 				applier);

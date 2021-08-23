@@ -158,7 +158,6 @@ static inline void
 _dispatch_apply_f(dispatch_queue_global_t dq, dispatch_apply_t da,
 		dispatch_function_t func)
 {
-	int32_t i = 0;
 	dispatch_continuation_t head = NULL, tail = NULL;
 	pthread_priority_t pp = _dispatch_get_priority();
 
@@ -167,7 +166,7 @@ _dispatch_apply_f(dispatch_queue_global_t dq, dispatch_apply_t da,
 
 	dispatch_assert(continuation_cnt);
 
-	for (i = 0; i < continuation_cnt; i++) {
+	for (int32_t i = continuation_cnt; i > 0; i--) {
 		dispatch_continuation_t next = _dispatch_continuation_alloc();
 		uintptr_t dc_flags = DC_FLAG_CONSUME;
 
