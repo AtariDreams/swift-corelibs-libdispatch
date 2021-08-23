@@ -1060,13 +1060,13 @@ typedef struct dispatch_sync_context_s {
 	dispatch_tid dsc_waiter;
 	uint8_t dsc_override_qos_floor;
 	uint8_t dsc_override_qos;
-	uint16_t dsc_autorelease : 2;
-	uint16_t dsc_wlh_was_first : 1;
-	uint16_t dsc_wlh_is_workloop : 1;
-	uint16_t dsc_waiter_needs_cancel : 1;
-	uint16_t dsc_release_storage : 1;
+	uint8_t dsc_autorelease : 2;
+	bool dsc_wlh_was_first : 1;
+	bool dsc_wlh_is_workloop : 1;
+	bool dsc_waiter_needs_cancel : 1;
+	bool dsc_release_storage : 1;
 #if DISPATCH_INTROSPECTION
-	uint16_t dsc_from_async : 1;
+	bool dsc_from_async : 1;
 #endif
 } *dispatch_sync_context_t;
 

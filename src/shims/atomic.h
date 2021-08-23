@@ -155,7 +155,7 @@
 		os_atomic_sub_orig2o(p, f, 1, m)
 
 #define os_atomic_rmw_loop(p, ov, nv, m, ...)  ({ \
-		bool _result = false; \
+		bool _result; \
 		__typeof__(p) _p = (p); \
 		ov = os_atomic_load(_p, relaxed); \
 		do { \

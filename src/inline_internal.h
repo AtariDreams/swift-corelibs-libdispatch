@@ -694,7 +694,7 @@ _dispatch_queue_autorelease_frequency(dispatch_queue_class_t dqu)
 	dispatch_queue_flags_t qaf = _dispatch_queue_atomic_flags(dqu);
 
 	qaf &= (dispatch_queue_flags_t)_DQF_AUTORELEASE_MASK;
-	return (dispatch_invoke_flags_t)qaf * factor;
+	return qaf * (dispatch_invoke_flags_t)factor;
 }
 
 DISPATCH_ALWAYS_INLINE
