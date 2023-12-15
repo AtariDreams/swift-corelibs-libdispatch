@@ -32,20 +32,11 @@
 #define __has_builtin(builtin) 0
 #endif
 
-#if __has_builtin(__sync_bool_compare_and_swap)
-#define OSAtomicCompareAndSwapInt(_Old, _New, _Ptr)                            \
-  __sync_bool_compare_and_swap(_Ptr, _Old, _New)
-#else
-#define _CRT_SECURE_NO_WARNINGS 1
-#include <Windows.h>
+#include <stdatomic.h>
 static __inline bool OSAtomicCompareAndSwapInt(int oldi, int newi,
                                                int volatile *dst) {
-  // fixme barrier is overkill -- see objc-os.h
-  int original = InterlockedCompareExchange((LONG volatile *)dst, newi, oldi);
-  return (original == oldi);
+  return atomic_compare_exchange_weak((_Atomic(int)*)dst, &oldi, newi);
 }
-#endif
-
 /***********************
 Globals
 ************************/
