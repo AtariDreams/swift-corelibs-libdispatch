@@ -27,12 +27,14 @@
 #ifndef __DISPATCH_SHIMS_ATOMIC_SFB__
 #define __DISPATCH_SHIMS_ATOMIC_SFB__
 
+#include <stdatomic.h>
+
 #if defined(__x86_64__) || defined(__i386__)
 
 // Returns UINT_MAX if all the bits in p were already set.
 DISPATCH_ALWAYS_INLINE
 static inline unsigned int
-os_atomic_set_first_bit(volatile unsigned long *p, unsigned int max)
+os_atomic_set_first_bit(atomic_ulong *p, unsigned int max)
 {
 	unsigned long val, bit;
 	if (max > (sizeof(val) * 8)) {
@@ -82,7 +84,7 @@ os_atomic_set_first_bit(volatile unsigned long *p, unsigned int max)
 
 DISPATCH_ALWAYS_INLINE
 static inline unsigned int
-os_atomic_set_first_bit(volatile unsigned long *p, unsigned int max_index)
+os_atomic_set_first_bit(atomic_ulong *p, unsigned int max_index)
 {
 	unsigned int index;
 	unsigned long b, b_masked;

@@ -27,7 +27,7 @@
 #include "dispatch_test.h"
 
 const int32_t final = 10;
-static atomic_int count = ATOMIC_VAR_INIT(0);
+static atomic_int count = 0
 
 static void
 work(void* ctxt __attribute__((unused)))

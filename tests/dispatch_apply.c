@@ -102,7 +102,7 @@ static void test_apply_contended(dispatch_queue_t dq)
 	}
 
 	
-	__block atomic_int count = ATOMIC_VAR_INIT(0);
+	__block atomic_int count = 0
 	const int32_t final = 32;
 
 	int32_t before = busy_threads_started;
@@ -128,7 +128,7 @@ main(void)
 {
 	dispatch_test_start("Dispatch Apply");
 
-	__block atomic_int count = ATOMIC_VAR_INIT(0);
+	__block atomic_int count = 0
 	const int32_t final = 32;
 
 	dispatch_queue_t queue = dispatch_get_global_queue(0, 0);

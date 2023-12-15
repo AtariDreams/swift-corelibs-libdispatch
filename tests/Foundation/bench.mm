@@ -568,7 +568,7 @@ main(void)
 	print_result(s, "Atomic increment:");
 
 	{
-		global = ATOMIC_VAR_INIT(0);
+		global = 0
 		atomic_int *g = &global;
 
 		s = mach_absolute_time();
@@ -584,7 +584,7 @@ main(void)
 	}
 
 	{
-		global = ATOMIC_VAR_INIT(0);
+		global = 0
 		atomic_int *g = &global;
 
 		s = mach_absolute_time();
@@ -598,7 +598,7 @@ main(void)
 		print_result(s, "Atomic and-and-fetch, using result:");
 	}
 
-	global = ATOMIC_VAR_INIT(0);
+	global = 0
 
 	s = mach_absolute_time();
 	for (i = cnt; i; i--) {
@@ -606,7 +606,7 @@ main(void)
 	}
 	print_result(s, "atomic_fetch_add with memory_order_seq_cst barrier:");
 
-	global = ATOMIC_VAR_INIT(0);
+	global = 0
 
 	s = mach_absolute_time();
 	for (i = cnt; i; i--) {
@@ -614,7 +614,7 @@ main(void)
 	}
 	print_result(s, "atomic_fetch_add with memory_order_relaxed barrier:");
 
-	w_global = ATOMIC_VAR_INIT(0);
+	w_global = 0
 
 	s = mach_absolute_time();
 	for (i = cnt; i; i--) {
@@ -622,7 +622,7 @@ main(void)
 	}
 	print_result(s, "64-bit atomic_fetch_add with memory_order_seq_cst barrier:");
 
-	w_global = ATOMIC_VAR_INIT(0);
+	w_global = 0
 
 	s = mach_absolute_time();
 	for (i = cnt; i; i--) {
@@ -630,11 +630,11 @@ main(void)
 	}
 	print_result(s, "64-bit atomic_fetch_add with memory_order_seq_cst barrier:");
 
-	global = ATOMIC_VAR_INIT(0);
+	global = 0
 
 	s = mach_absolute_time();
 	for (i = cnt; i; i--) {
-		atomic_int zero = ATOMIC_VAR_INIT(0);
+		atomic_int zero = 0
 		while (!atomic_compare_exchange_weak(&global, &zero, 1)) {
 			do {
 #if defined(__i386__) || defined(__x86_64__)
@@ -644,7 +644,7 @@ main(void)
 #endif
 			} while (global);
 		}
-		global = ATOMIC_VAR_INIT(0);
+		global = 0
 	}
 	print_result(s, "Inlined spin lock/unlock:");
 

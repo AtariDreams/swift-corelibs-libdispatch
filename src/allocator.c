@@ -138,7 +138,7 @@ DISPATCH_ALWAYS_INLINE_NDEBUG
 static void
 get_maps_and_indices_for_continuation(dispatch_continuation_t c,
 		bitmap_t **supermap_out, unsigned int *bitmap_index_out,
-		bitmap_t **bitmap_out, unsigned int *index_out)
+		_Atomic(bitmap_t) **bitmap_out, unsigned int *index_out)
 {
 	unsigned int cindex, sindex, index, mindex;
 	padded_continuation *p = (padded_continuation *)c;
@@ -220,7 +220,7 @@ bitmap_is_full(bitmap_t bits)
 // allowed to be set.
 DISPATCH_ALWAYS_INLINE_NDEBUG
 static unsigned int
-bitmap_set_first_unset_bit_upto_index(volatile bitmap_t *bitmap,
+bitmap_set_first_unset_bit_upto_index(_Atomic(bitmap_t) *bitmap,
 		unsigned int max_index)
 {
 	// No barriers needed in acquire path: the just-allocated
@@ -233,7 +233,7 @@ bitmap_set_first_unset_bit_upto_index(volatile bitmap_t *bitmap,
 
 DISPATCH_ALWAYS_INLINE
 static unsigned int
-bitmap_set_first_unset_bit(volatile bitmap_t *bitmap)
+bitmap_set_first_unset_bit(_Atomic(bitmap_t) *bitmap)
 {
 	return bitmap_set_first_unset_bit_upto_index(bitmap, UINT_MAX);
 }
@@ -244,7 +244,7 @@ bitmap_set_first_unset_bit(volatile bitmap_t *bitmap)
 // Return true if this bit was the last in the bitmap, and it is now all zeroes
 DISPATCH_ALWAYS_INLINE_NDEBUG
 static bool
-bitmap_clear_bit(volatile bitmap_t *bitmap, unsigned int index,
+bitmap_clear_bit(Atomic_(bitmap_t) *bitmap, unsigned int index,
 		bool exclusively)
 {
 #if DISPATCH_DEBUG
@@ -254,7 +254,8 @@ bitmap_clear_bit(volatile bitmap_t *bitmap, unsigned int index,
 	bitmap_t b;
 
 	if (exclusively == CLEAR_EXCLUSIVELY) {
-		if (unlikely((*bitmap & mask) == 0)) {
+		b = atomic_load(bitmap);
+		if (unlikely((b & mask) == 0)) {
 			DISPATCH_CLIENT_CRASH(*bitmap,
 					"Corruption: failed to clear bit exclusively");
 		}
@@ -544,7 +545,7 @@ _dispatch_alloc_maybe_madvise_page(dispatch_continuation_t c)
 	// take ownership of them all.
 	for (i = 0; i < BITMAPS_PER_PAGE; i++)
 	{
-		if (!os_atomic_cmpxchg(&page_bitmaps[last_locked], BITMAP_C(0),
+		if (!os_atomic_cmpxchg(&page_bitmaps[i], BITMAP_C(0),
 				BITMAP_ALL_ONES, relaxed)) {
 			// We didn't get one; since there is a cont allocated in
 			// the page, we can't madvise. Give up and unlock all.
@@ -566,6 +567,7 @@ _dispatch_alloc_maybe_madvise_page(dispatch_continuation_t c)
 										   MADV_FREE));
 	}
 
+	os_atomic_store(&page_bitmaps[0], BITMAP_C(0), relaxed);
 	while (i > 1) {
 		page_bitmaps[--i] = BITMAP_C(0);
 	}

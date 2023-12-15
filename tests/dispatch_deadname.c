@@ -275,8 +275,8 @@ test_send_possible(void) // rdar://problem/8758200
 	kern_return_t kr;
 	mach_port_t mp;
 
-	sent = ATOMIC_VAR_INIT(0);
-	received = ATOMIC_VAR_INIT(0);
+	sent = 0
+	received = 0
 	dispatch_group_enter(g);
 	kr = mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_RECEIVE, &mp);
 	test_mach_error("mach_port_allocate", kr, KERN_SUCCESS);
@@ -402,7 +402,7 @@ test_mig_server_large_msg(void) // rdar://problem/8422992
 	kern_return_t kr;
 	mach_port_t mp;
 
-	received = ATOMIC_VAR_INIT(0);
+	received = 0
 	dispatch_group_enter(g);
 	kr = mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_RECEIVE, &mp);
 	test_mach_error("mach_port_allocate", kr, KERN_SUCCESS);

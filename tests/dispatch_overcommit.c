@@ -35,7 +35,7 @@
 #include <bsdtests.h>
 #include "dispatch_test.h"
 
-atomic_int count = ATOMIC_VAR_INIT(0);
+atomic_int count = 0
 const int32_t final = 32;
 
 int
