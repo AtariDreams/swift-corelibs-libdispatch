@@ -254,9 +254,9 @@ bitmap_clear_bit(Atomic_(bitmap_t) *bitmap, unsigned int index,
 	bitmap_t b;
 
 	if (exclusively == CLEAR_EXCLUSIVELY) {
-		b = atomic_load(bitmap);
+		b = atomic_load(bitmap, memory_order_release);
 		if (unlikely((b & mask) == 0)) {
-			DISPATCH_CLIENT_CRASH(*bitmap,
+			DISPATCH_CLIENT_CRASH(b,
 					"Corruption: failed to clear bit exclusively");
 		}
 	}
@@ -268,7 +268,7 @@ bitmap_clear_bit(Atomic_(bitmap_t) *bitmap, unsigned int index,
 
 DISPATCH_ALWAYS_INLINE_NDEBUG
 static void
-mark_bitmap_as_full_if_still_full(volatile bitmap_t *supermap,
+mark_bitmap_as_full_if_still_full(_Atomic(bitmap_t) *supermap,
 		unsigned int bitmap_index, volatile bitmap_t *bitmap)
 {
 #if DISPATCH_DEBUG
@@ -322,8 +322,8 @@ alloc_continuation_from_magazine(struct dispatch_magazine_s *magazine)
 	unsigned int s, b, index;
 
 	for (s = 0; s < SUPERMAPS_PER_MAGAZINE; s++) {
-		volatile bitmap_t *supermap = supermap_address(magazine, s);
-		if (bitmap_is_full(*supermap)) {
+		_Alloc(bitmap_t) *supermap = supermap_address(magazine, s);
+		if (bitmap_is_full(atomic_load(supermap, memory_order_release))) {
 			continue;
 		}
 		for (b = 0; b < BITMAPS_PER_SUPERMAP; b++) {
